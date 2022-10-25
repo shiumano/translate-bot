@@ -13,11 +13,9 @@ target = int(os.getenv('target_channel'))
 DeepLToken = os.getenv('DeepLToken')
 intents = discord.Intents.all() 
 client = discord.Client(intents=intents)
-tree = app_commands.CommandTree(client)
 
 @client.event
 async def on_ready():
-    await tree.sync()
     global source_channel
     global target_channel
     source_channel = client.get_channel(source)
