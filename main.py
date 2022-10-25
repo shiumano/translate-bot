@@ -1,10 +1,7 @@
 import discord
 import os
 import requests
-import datetime
 from dotenv import load_dotenv
-from discord import app_commands
-from discord.app_commands import Choice
 load_dotenv()
 
 Token = os.getenv('Token')
