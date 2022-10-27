@@ -25,47 +25,27 @@ async def on_message(message):
     elif message.author.discriminator == "0000":
         return
     else:
-        try:
-            if message.channel == source_channel:
-                request = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=EN")
-                result = request.json()
-                webhooks = await target_channel.webhooks()
-                webhook = webhooks[0]
-            elif message.channel == target_channel:
-                request = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=JA")
-                result = request.json()
-                webhooks = await source_channel.webhooks()
-                webhook = webhooks[0]
-            if message.attachments:
-                for attachment in message.attachments:
-                    await webhook.send(content=result["translations"][0]["text"]+ "\n" + attachment.url,
-                                username=message.author.name,
-                                avatar_url=message.author.avatar.url
-                                )
-            else:
-                await webhook.send(content=result["translations"][0]["text"],
-                                username=message.author.name,
-                                avatar_url=message.author.avatar.url
-                                )
-        except Exception:
-            if message.channel == source_channel:
-                request = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=EN")
-                result = request.json()
-                webhook = source_channel.create_webhook(name="英語")
-            elif message.channel == target_channel:
-                request = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=JA")
-                result = request.json()
-                webhook = source_channel.create_webhook(name="日本語")
-            if message.attachments:
-                for attachment in message.attachments:
-                    await webhook.send(content=result["translations"][0]["text"]+ "\n" + attachment.url,
-                                username=message.author.name,
-                                avatar_url=message.author.avatar.url
-                                )
-            else:
-                await webhook.send(content=result["translations"][0]["text"],
-                                username=message.author.name,
-                                avatar_url=message.author.avatar.url
-                                )
+        if message.channel == source_channel:
+            webhooks = await target_channel.webhooks()
+            webhook = webhooks[0]
+            request = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=EN")
+            result = request.json()
+            source_channel.create_webhook(name="英語")
+        elif message.channel == target_channel:
+            webhooks = await source_channel.webhooks()
+            webhook = webhooks[0]
+            request = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=JA")
+            result = request.json()
+        if message.attachments:
+            for attachment in message.attachments:
+                await webhook.send(content=result["translations"][0]["text"]+ "\n" + attachment.url,
+                            username=message.author.name,
+                            avatar_url=message.author.avatar.url
+                            )
+        else:
+            await webhook.send(content=result["translations"][0]["text"],
+                            username=message.author.name,
+                            avatar_url=message.author.avatar.url
+                            )
 
 client.run(Token)
