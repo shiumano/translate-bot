@@ -31,16 +31,13 @@ async def on_message(message):
                 result = request.json()
                 webhooks = await target_channel.webhooks()
                 webhook = webhooks[0]
-                await webhook.send(content=result["translations"][0]["text"],
-                            username=message.author.name,
-                            avatar_url=message.author.avatar.url
-                            )
             elif message.channel == target_channel:
                 request = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=JA")
                 result = request.json()
                 webhooks = await source_channel.webhooks()
                 webhook = webhooks[0]
-                await webhook.send(content=result["translations"][0]["text"],
+            for attachment in message.attachments:
+                await webhook.send(content=result["translations"][0]["text"]+ "\n" + attachment.url,
                             username=message.author.name,
                             avatar_url=message.author.avatar.url
                             )
@@ -48,17 +45,13 @@ async def on_message(message):
             if message.channel == source_channel:
                 request = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=EN")
                 result = request.json()
-                webhooks = await target_channel.webhooks()
-                webhook = webhooks[0]
-                await webhook.send(content=result["translations"][0]["text"],
-                            username=message.author.name,
-                            avatar_url=message.author.avatar.url
-                            )
+                webhook = source_channel.create_webhook(name="英語")
             elif message.channel == target_channel:
                 request = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=JA")
                 result = request.json()
                 webhook = source_channel.create_webhook(name="日本語")
-                await webhook.send(content=result["translations"][0]["text"],
+            for attachment in message.attachments:
+                await webhook.send(content=result["translations"][0]["text"]+ "\n" + attachment.url,
                             username=message.author.name,
                             avatar_url=message.author.avatar.url
                             )
