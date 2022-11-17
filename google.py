@@ -2,7 +2,6 @@ import discord
 import os
 import requests
 from dotenv import load_dotenv
-from googletrans import Translator
 load_dotenv()
 
 Token = os.getenv('Token')
@@ -10,7 +9,6 @@ source = int(os.getenv('source_channel'))
 target = int(os.getenv('target_channel'))
 intents = discord.Intents.all() 
 client = discord.Client(intents=intents)
-translator = Translator()
 
 @client.event
 async def on_ready():
