@@ -15,8 +15,4 @@ Step2 翻訳サービスを選ぶ<br>
 Google翻訳を使う場合 `$ python3 google.py`<br>
 DeepL翻訳を使う場合 `$ python3 main.py`<br>
 
-Step3 Webhookを作成する<br>
-英語と日本語のチャンネルのWebhookを作る<br>
-![](./webhook.png)<br>
-
 Enjoy
