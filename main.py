@@ -28,24 +28,17 @@ async def on_message(message):
             try:
                 webhooks = await target_channel.webhooks()
                 webhook = webhooks[0]
-                r = requests.get(
-                    f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=EN")
-                result = r.json()
             except Exception:
                 webhook = await target_channel.create_webhook(name="英語")
-                r = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=EN")
-                result = r.json()
+            r = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=EN")
+            result = r.json()
         elif message.channel == target_channel:
             try:
                 webhooks = await source_channel.webhooks()
                 webhook = webhooks[0]
-                r = requests.get(
-                    f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=JA")
-                result = r.json()
             except Exception:
                 webhook = await source_channel.create_webhook(name="日本語")
-                r = requests.get(
-                    f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=JA")
+                r = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=JA")
                 result = r.json()
         if message.attachments:
             for attachment in message.attachments:
