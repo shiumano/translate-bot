@@ -1,6 +1,8 @@
 import discord
 import os
 import requests
+import langid
+from discord import app_commands
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,6 +13,8 @@ target = int(os.getenv('target_channel'))
 DeepLToken = os.getenv('DeepLToken')
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
+tree = app_commands.CommandTree(client)
+
 
 @client.event
 async def on_ready():
@@ -18,6 +22,8 @@ async def on_ready():
     global target_channel
     source_channel = client.get_channel(source)
     target_channel = client.get_channel(target)
+    await tree.sync()
+
 
 @client.event
 async def on_message(message):
@@ -51,5 +57,21 @@ async def on_message(message):
                                username=message.author.name,
                                avatar_url=message.author.avatar.url
                                )
+
+
+@tree.context_menu(name="translate")
+async def translate(interaction: discord.Interaction, message: discord.Message):
+    details = langid.classify(message.content)
+    if "en" == details[0]:
+        r = requests.get(
+            f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=JA")
+        result = r.json()
+    elif "ja" == details[0]:
+        r = requests.get(
+            f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=EN")
+        result = r.json()
+    else:
+        await interaction.response.send_message("Error", ephemeral=True)
+    await interaction.response.send_message(result["translations"][0]["text"], ephemeral=True)
 
 client.run(Token)
