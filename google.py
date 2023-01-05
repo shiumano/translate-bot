@@ -58,7 +58,7 @@ async def on_message(message):
                                )
 
 
-@tree.context_menu(name="translate")
+@tree.context_menu(name="Translate Message")
 async def translate(interaction: discord.Interaction, message: discord.Message):
     details = langid.classify(message.content)
     if "en" == details[0]:
