@@ -33,7 +33,7 @@ async def on_message(message):
             try:
                 webhooks = await target_channel.webhooks()
                 webhook = webhooks[0]
-            except Exception:
+            except TypeError:
                 webhook = await target_channel.create_webhook(name="英語")
             r = requests.get(f"https://script.google.com/macros/s/AKfycbzowZjdWrs8td1cnJNwjmaVuSmpfR6gpYYQHNnJ6cPHDVedJXtv1K65CWtlZZ0SSgBGHQ/exec?text={message.content}&source=ja&target=en")
             result = r.json()
@@ -41,20 +41,20 @@ async def on_message(message):
             try:
                 webhooks = await source_channel.webhooks()
                 webhook = webhooks[0]
-            except Exception:
+            except TypeError:
                 webhook = await source_channel.create_webhook(name="日本語")
             r = requests.get(f"https://script.google.com/macros/s/AKfycbzowZjdWrs8td1cnJNwjmaVuSmpfR6gpYYQHNnJ6cPHDVedJXtv1K65CWtlZZ0SSgBGHQ/exec?text={message.content}&source=en&target=ja")
             result = r.json()
         if message.attachments:
             for attachment in message.attachments:
                 await webhook.send(content=result["text"] + "\n" + attachment.url,
-                                   username=message.author.name,
-                                   avatar_url=message.author.avatar.url
+                                   username=message.author.display_name,
+                                   avatar_url=message.author.display_avatar.url
                                    )
         else:
             await webhook.send(content=result["text"],
-                               username=message.author.name,
-                               avatar_url=message.author.avatar.url
+                               username=message.author.display_name,
+                               avatar_url=message.author.display_avatar.url
                                )
 
 
