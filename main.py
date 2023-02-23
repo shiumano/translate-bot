@@ -25,53 +25,52 @@ async def on_ready():
     await tree.sync()
 
 
+async def send(channel, message, text):
+    try:
+        webhooks = await channel.webhooks()
+        webhook = webhooks[0]
+    except IndexError:
+        await channel.create_webhook(name="Translate")
+    if message.attachments:
+        for attachment in message.attachments:
+            await webhook.send(content=text.replace("<sharp>", "#") + "\n" + attachment.url,
+                               username=message.author.display_name,
+                               avatar_url=message.author.display_avatar.url
+                               )
+    else:
+        await webhook.send(content=text.replace("<sharp>", "#"),
+                           username=message.author.display_name,
+                           avatar_url=message.author.display_avatar.url
+                           )
+
+
+def tr(text, source, target):
+    r = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={text}&target_lang=EN")
+    return r.json()["translations"][0]["text"]
+
+
 @client.event
 async def on_message(message):
     if message.author.bot or message.author.discriminator == "0000":
         return
     else:
+        text = message.content.replace("#", "<sharp>")
         if message.channel == source_channel:
-            try:
-                webhooks = await target_channel.webhooks()
-                webhook = webhooks[0]
-            except IndexError:
-                webhook = await target_channel.create_webhook(name="英語")
-            r = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=EN")
-            result = r.json()
+            await send(channel=target_channel, message=message, text=tr(text=text, source="ja", target="en"))
         elif message.channel == target_channel:
-            try:
-                webhooks = await source_channel.webhooks()
-                webhook = webhooks[0]
-            except IndexError:
-                webhook = await source_channel.create_webhook(name="日本語")
-            r = requests.get(f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=JA")
-            result = r.json()
-        if message.attachments:
-            for attachment in message.attachments:
-                await webhook.send(content=result["translations"][0]["text"] + "\n" + attachment.url,
-                                   username=message.author.display_name,
-                                   avatar_url=message.author.display_avatar.url
-                                   )
-        else:
-            await webhook.send(content=result["translations"][0]["text"],
-                               username=message.author.display_name,
-                               avatar_url=message.author.display_avatar.url
-                               )
+            await send(channel=source_channel, message=message, text=tr(text=text, source="en", target="ja"))
 
 
 @tree.context_menu(name="Translate Message")
 async def translate(interaction: discord.Interaction, message: discord.Message):
     details = langid.classify(message.content)
+    text = message.content.replace("#", "<sharp>")
     if "en" == details[0]:
-        r = requests.get(
-            f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=JA")
-        result = r.json()
+        await interaction.response.send_message(tr(text=text, source="en", target="ja").replace("<sharp>", "#"), ephemeral=True)
     elif "ja" == details[0]:
-        r = requests.get(
-            f"https://api-free.deepl.com/v2/translate?auth_key={DeepLToken}&text={message.content}&target_lang=EN")
-        result = r.json()
+        await interaction.response.send_message(tr(text=text, source="ja", target="en").replace("<sharp>", "#"), ephemeral=True)
     else:
         await interaction.response.send_message("Error", ephemeral=True)
-    await interaction.response.send_message(result["translations"][0]["text"], ephemeral=True)
+
 
 client.run(Token)
