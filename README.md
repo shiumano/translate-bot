@@ -10,6 +10,7 @@ Token="DiscordToken" #DiscordBotトークン
 source_channel="1035219664780927118" #日本語のチャンネルID
 target_channel="1035219699367157842" #英語のチャンネルID
 DeepLToken="DeepLAPIKey" #DeepLを使う場合はDeepL APIのキーを記述
+GoogleAPIUrl="GoogleAPIKey" #Google翻訳を使う場合はGASのUrlを記述
 ```
 Step2 翻訳サービスを選ぶ<br>
 Google翻訳を使う場合 `$ python3 google.py`<br>
