@@ -13,7 +13,7 @@ DeepLToken="DeepLAPIKey" #DeepLを使う場合はDeepL APIのキーを記述
 GoogleAPIUrl="GoogleAPIKey" #Google翻訳を使う場合はGASのUrlを記述
 ```
 Step2 翻訳サービスを選ぶ<br>
-Google翻訳を使う場合 `$ python3 google.py`<br>
-DeepL翻訳を使う場合 `$ python3 main.py`<br>
+Google翻訳を使う場合 `$ python3 main.py google`<br>
+DeepL翻訳を使う場合 `$ python3 main.py deepl`<br>
 
 Enjoy
